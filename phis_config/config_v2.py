@@ -9,8 +9,11 @@ _singleton_instance: PhisConfig | None = None
 def _get_instance() -> PhisConfig:
     global _singleton_instance
     if _singleton_instance is None:
-        logging.warning(f'医院配置目录未设置，使用当前目录{Path.cwd()}')
-        _singleton_instance = PhisConfig(Path.cwd())
+        if Path.cwd().joinpath('文档').exists():
+            _singleton_instance = PhisConfig(Path.cwd())
+        else:
+            logging.warning('未设置医院配置目录，使用当前工作目录')
+            _singleton_instance = PhisConfig(Path.cwd())
     return _singleton_instance
 
 
