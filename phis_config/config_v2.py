@@ -1,86 +1,77 @@
-from .common import (
-    get_raw_string,
-    get_line_option,
-    Path,
-    get_line_option_as_bool,
-    get_line_option_as_int,
-)
+from .common import Path
 import logging
+from .config_class import PhisConfig
+
+
+_singleton_instance: PhisConfig | None = None
+
+
+def _get_instance() -> PhisConfig:
+    global _singleton_instance
+    if _singleton_instance is None:
+        logging.warning(f'医院配置目录未设置，使用当前目录{Path.cwd()}')
+        _singleton_instance = PhisConfig(Path.cwd())
+    return _singleton_instance
 
 
 class ProgramConfigV2:
-    hospital_config_dir: Path = None
-
     @classmethod
     def set_hospital_config_dir(cls, config_dir: Path):
-        cls.hospital_config_dir = config_dir
+        global _singleton_instance
+        _singleton_instance = PhisConfig(config_dir)
 
     @classmethod
     def get_config(cls, file_relative_path: str):
-        if cls.hospital_config_dir is None:
-            logging.warning(f'医院配置目录未设置，使用当前目录{Path.cwd()}')
-            cls.hospital_config_dir = Path.cwd()
-        return cls.hospital_config_dir.joinpath(file_relative_path)
+        return _get_instance().get_config(file_relative_path)
 
     @classmethod
     def get_url(cls):
-        return get_raw_string(cls.get_config('文档/admin.txt'), 1)
+        return _get_instance().get_url()
 
     @classmethod
     def get_username(cls):
-        return get_raw_string(cls.get_config('文档/admin.txt'), 2)
+        return _get_instance().get_username()
 
     @classmethod
     def get_password(cls):
-        return get_raw_string(cls.get_config('文档/admin.txt'), 3)
+        return _get_instance().get_password()
 
     @classmethod
     def get_department_name(cls):
-        return get_raw_string(cls.get_config('文档/admin.txt'), 4)
+        return _get_instance().get_department_name()
 
     @classmethod
     def get_follow_up_start_date(cls):
-        return get_line_option(cls.get_config('文档/admin.txt'), '随访新建起始时间')
+        return _get_instance().get_follow_up_start_date()
 
     @classmethod
     def get_follow_up_end_date(cls):
-        return get_line_option(cls.get_config('文档/admin.txt'), '随访新建结束时间')
+        return _get_instance().get_follow_up_end_date()
 
     @classmethod
     def get_completed_count(cls):
-        return get_line_option_as_int(cls.get_config('执行结果/env.txt'), '已完成数量')
+        return _get_instance().get_completed_count()
 
     @classmethod
     def get_organization_name(cls):
-        return get_line_option(cls.get_config('执行结果/env.txt'), '机构名称')
+        return _get_instance().get_organization_name()
 
     @classmethod
     def use_other_doctor_records(cls) -> bool:
-        # 没有签约医生的门诊记录, 是否需要判别包含机构名称字样的其他医生的门诊记录
-        return get_line_option_as_bool(
-            cls.get_config('执行结果/env.txt'), '没有签约医生的门诊'
-        )
+        return _get_instance().use_other_doctor_records()
 
     @classmethod
     def continue_save_if_already_done_test(cls) -> bool:
-        # 本季度已做过慢病随访，是否继续保存
-        return get_line_option_as_bool(
-            cls.get_config('执行结果/env.txt'), '本季度已做过慢病随访，是否继续保存'
-        )
+        return _get_instance().continue_save_if_already_done_test()
 
     @classmethod
     def no_diabetes_record_fasting_blood_sugar(cls) -> bool:
-        # 无糖尿病是否录入空腹血糖
-        return get_line_option_as_bool(
-            cls.get_config('执行结果/env.txt'), '无糖尿病是否录入空腹血糖'
-        )
+        return _get_instance().no_diabetes_record_fasting_blood_sugar()
 
     @classmethod
     def introduction_medication_start_date(cls):
-        # 引入用药起始时间
-        return get_line_option(cls.get_config('执行结果/env.txt'), '引入用药起始时间')
+        return _get_instance().introduction_medication_start_date()
 
     @classmethod
     def introduction_medication_end_date(cls):
-        # 引入用药结束时间
-        return get_line_option(cls.get_config('执行结果/env.txt'), '引入用药结束时间')
+        return _get_instance().introduction_medication_end_date()
