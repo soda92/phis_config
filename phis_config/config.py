@@ -3,7 +3,6 @@
 """
 
 from pathlib import Path
-import logging
 from .common import get_line_option, get_raw_string
 
 
@@ -14,8 +13,6 @@ class ProgramConfig:
 
     def __init__(self, path):
         self.env_file = Path(path)
-        if not self.env_file.exists():
-            logging.fatal(f'文件不存在，请检查文件路径是否正确. {self.env_file}')
 
     @property
     def 已完成数量(self):
@@ -46,8 +43,6 @@ class ProgramConfig:
 class AdminConfig1:
     def __init__(self, path):
         self.env_file = Path(path)
-        if not self.env_file.exists():
-            logging.fatal(f'文件不存在，请检查文件路径是否正确. {self.env_file}')
 
     @property
     def 随访新建起始时间(self):

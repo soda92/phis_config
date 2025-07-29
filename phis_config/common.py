@@ -3,8 +3,16 @@ import logging
 from typing import Union
 
 
+def check_exists(file: Union[str, Path]) -> None:
+    file_path = Path(file).resolve()
+    if not file_path.exists():
+        logging.fatal(f'文件不存在，请检查文件路径是否正确. {file_path}')
+        exit(-1)
+
+
 def env_write(file_path, line_number, content):
     # 读取文件并将其内容存储到列表中
+    check_exists(file_path)
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
@@ -28,6 +36,7 @@ def get_line_option(
     获取配置文件中第N行数据的值 (格式: KEY:VALUE)
     或者：获取配置文件中以XXX开头的行的值
     """
+    check_exists(env_file)
     if isinstance(line_number_or_start_string, int):
         config_content = env_file.read_text(encoding='utf8').split('\n')
         line_number_in_file = line_number_or_start_string - 1  # 实际行数从0开始
@@ -47,7 +56,9 @@ def get_line_option(
         logging.error('line_number_or_start_string 必须是 int 或 str 类型')
 
 
-def get_line_option_as_int(env_file: Path, line_number_or_start_string: Union[int, str]) -> int:
+def get_line_option_as_int(
+    env_file: Path, line_number_or_start_string: Union[int, str]
+) -> int:
     """
     获取配置文件中第N行数据的值 (格式: KEY:VALUE) 并转换为整数
     """
@@ -57,9 +68,11 @@ def get_line_option_as_int(env_file: Path, line_number_or_start_string: Union[in
     except ValueError:
         logging.fatal(f'无法将 "{value}" 转换为整数')
         return 0  # 或者抛出异常，根据需要处理
-    
 
-def get_line_option_as_bool(env_file: Path, line_number_or_start_string: Union[int, str]) -> bool:
+
+def get_line_option_as_bool(
+    env_file: Path, line_number_or_start_string: Union[int, str]
+) -> bool:
     """
     获取配置文件中第N行数据的值 (格式: KEY:VALUE) 并转换为布尔值
     """
@@ -72,8 +85,10 @@ def get_line_option_as_bool(env_file: Path, line_number_or_start_string: Union[i
         logging.fatal(f'无法将 "{value}" 转换为布尔值')
         return False  # 或者抛出异常，根据需要处理
 
+
 def get_raw_string(env_file, line_number: int) -> str:
     "获取配置文件中第N行数据, 原字符串"
+    check_exists(env_file)
     config_content = env_file.read_text(encoding='utf8').split('\n')
     line_number_in_file = line_number - 1  # 实际行数从0开始
     return config_content[line_number_in_file].strip()
