@@ -68,3 +68,9 @@ class PhisConfig:
     def introduction_medication_end_date(self) -> str:
         # 引入用药结束时间
         return get_line_option(self.get_config('执行结果/env.txt'), '引入用药结束时间')
+
+    def get_line_option(self, file_relative_path: str, option_name: str) -> str:
+        """
+        获取指定配置文件中指定选项的值。
+        """
+        return get_line_option(self.get_config(file_relative_path), option_name)

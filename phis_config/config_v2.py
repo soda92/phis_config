@@ -78,3 +78,10 @@ class ProgramConfigV2:
     @classmethod
     def introduction_medication_end_date(cls):
         return _get_instance().introduction_medication_end_date()
+
+    @classmethod
+    def get_line_option(cls, file_relative_path: str, option_name: str):
+        """
+        获取指定键的配置行选项
+        """
+        return _get_instance().get_line_option(file_relative_path, option_name)
