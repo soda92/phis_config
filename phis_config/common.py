@@ -42,6 +42,7 @@ def get_line_option(
         line_number_in_file = line_number_or_start_string - 1  # 实际行数从0开始
         if line_number_in_file < 0 or line_number_in_file >= len(config_content):
             logging.fatal('配置文件行数错误！', line_number_or_start_string)
+            exit(-1)
         return (
             config_content[line_number_in_file].replace('：', ':').split(':')[1].strip()
         )
@@ -51,9 +52,11 @@ def get_line_option(
             if line.startswith(line_number_or_start_string):
                 return line.replace('：', ':').split(':')[1].strip()
         logging.fatal(f'配置文件中没有找到以"{line_number_or_start_string}"开头的行')
+        exit(-1)
 
     else:
         logging.error('line_number_or_start_string 必须是 int 或 str 类型')
+        exit(-1)
 
 
 def get_line_option_as_int(
@@ -91,8 +94,14 @@ def get_raw_string(env_file, line_number: int) -> str:
     check_exists(env_file)
     config_content = env_file.read_text(encoding='utf8').split('\n')
     line_number_in_file = line_number - 1  # 实际行数从0开始
-    return config_content[line_number_in_file].strip()
+    try:
+        return config_content[line_number_in_file].strip()
+    except IndexError:
+        logging.fatal(f'配置文件行数错误！{line_number_in_file + 1}行不存在')
+        exit(-1)
 
 
 def 重置已完成数量():
     env_write('执行结果/env.txt', 3, f'已完成数量:0')
+
+reset_finished_count = 重置已完成数量
